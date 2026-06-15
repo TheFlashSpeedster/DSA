@@ -1,0 +1,969 @@
+# 📘 DBMS Unit 4 Notes — Functional Dependency & Normalisation
+
+---
+
+# 1️⃣ Functional Dependency (FD)
+
+## 🔹 What is Functional Dependency?
+
+A **Functional Dependency (FD)** is a relationship between attributes in a relation (table).
+It states that one attribute uniquely determines another attribute.
+
+👉 If attribute **A determines B**, then:
+[
+A \rightarrow B
+]
+
+Meaning:
+
+* For every value of A, there is only one corresponding value of B.
+* B depends on A.
+
+---
+
+## 🔹 Example of Functional Dependency
+
+| StudentID | StudentName | Department |
+| --------- | ----------- | ---------- |
+| 101       | Rahul       | CSE        |
+| 102       | Aman        | IT         |
+
+Here:
+
+[
+StudentID \rightarrow StudentName
+]
+
+[
+StudentID \rightarrow Department
+]
+
+Because one StudentID identifies exactly one student and one department.
+
+---
+
+# 🔹 Types of Functional Dependency
+
+---
+
+## 1. Trivial Functional Dependency
+
+A dependency where RHS attribute already exists in LHS.
+
+### Definition
+
+If:
+[
+A \rightarrow B
+]
+and (B \subseteq A), then it is trivial.
+
+### Example
+
+[
+(StudentID, Name) \rightarrow Name
+]
+
+Because Name is already part of left side.
+
+---
+
+## 2. Non-Trivial Functional Dependency
+
+If RHS attribute is NOT present in LHS.
+
+### Example
+
+[
+StudentID \rightarrow Department
+]
+
+Department is not part of StudentID.
+
+---
+
+## 3. Completely Non-Trivial FD
+
+No common attribute exists between LHS and RHS.
+
+### Example
+
+[
+StudentID \rightarrow Department
+]
+
+No attribute is common.
+
+---
+
+## 4. Full Functional Dependency
+
+An attribute depends on the whole composite key, not part of it.
+
+### Example
+
+| StudentID | CourseID | Grade |
+| --------- | -------- | ----- |
+
+[
+(StudentID, CourseID) \rightarrow Grade
+]
+
+Grade depends on both attributes together.
+
+---
+
+## 5. Partial Dependency
+
+Attribute depends only on part of composite key.
+
+### Example
+
+| StudentID | CourseID | StudentName |
+| --------- | -------- | ----------- |
+
+[
+(StudentID, CourseID) \rightarrow StudentName
+]
+
+But actually:
+[
+StudentID \rightarrow StudentName
+]
+
+So StudentName depends only on StudentID.
+
+---
+
+## 6. Transitive Dependency
+
+A non-key attribute depends on another non-key attribute.
+
+### Example
+
+[
+StudentID \rightarrow DeptID
+]
+
+[
+DeptID \rightarrow DeptName
+]
+
+Therefore:
+[
+StudentID \rightarrow DeptName
+]
+
+This is transitive dependency.
+
+---
+
+# 🔹 Closure of Attribute
+
+## Definition
+
+Attribute closure means finding all attributes that can be determined from a given attribute set using FD rules.
+
+Notation:
+[
+A^+
+]
+
+(read as “A plus”)
+
+---
+
+## 🔹 Purpose of Attribute Closure
+
+✅ To find candidate keys
+✅ To check normalization
+✅ To verify functional dependencies
+
+---
+
+# 🔹 Steps to Find Closure
+
+1. Start with given attribute set
+2. Apply FD rules repeatedly
+3. Add derived attributes
+4. Stop when no new attributes can be added
+
+---
+
+# 🔹 Example of Attribute Closure
+
+Given:
+
+[
+A \rightarrow B
+]
+
+[
+B \rightarrow C
+]
+
+[
+C \rightarrow D
+]
+
+Find:
+[
+A^+
+]
+
+### Solution
+
+Start:
+[
+A^+ = {A}
+]
+
+Using:
+[
+A \rightarrow B
+]
+
+Add B:
+[
+{A,B}
+]
+
+Using:
+[
+B \rightarrow C
+]
+
+Add C:
+[
+{A,B,C}
+]
+
+Using:
+[
+C \rightarrow D
+]
+
+Add D:
+[
+{A,B,C,D}
+]
+
+Final:
+[
+A^+ = {A,B,C,D}
+]
+
+---
+
+# 🔹 Closure in Product Table Example
+
+## Product Table
+
+| ProductID | ProductName | Category | Supplier |
+| --------- | ----------- | -------- | -------- |
+
+Functional Dependencies:
+
+[
+ProductID \rightarrow ProductName
+]
+
+[
+ProductID \rightarrow Category
+]
+
+[
+Category \rightarrow Supplier
+]
+
+Find:
+[
+(ProductID)^+
+]
+
+---
+
+### Step 1
+
+Start:
+[
+{ProductID}
+]
+
+---
+
+### Step 2
+
+Using:
+[
+ProductID \rightarrow ProductName
+]
+
+Add ProductName.
+
+---
+
+### Step 3
+
+Using:
+[
+ProductID \rightarrow Category
+]
+
+Add Category.
+
+---
+
+### Step 4
+
+Using:
+[
+Category \rightarrow Supplier
+]
+
+Add Supplier.
+
+---
+
+### Final Closure
+
+[
+(ProductID)^+ =
+{ProductID, ProductName, Category, Supplier}
+]
+
+---
+
+# 2️⃣ Normalisation
+
+# 🔹 Introduction to Normalisation
+
+Normalization is the process of organizing data in database tables to reduce redundancy and dependency.
+
+It divides large tables into smaller related tables.
+
+---
+
+# 🔹 Purpose of Normalisation
+
+✅ Reduce data redundancy
+✅ Remove anomalies
+✅ Improve data consistency
+✅ Improve database structure
+✅ Save storage space
+✅ Simplify maintenance
+
+---
+
+# 🔹 E.F. Codd Original Objectives
+
+Edgar F. Codd introduced normalization.
+
+His objectives were:
+
+1. Eliminate redundant data
+2. Ensure logical data storage
+3. Reduce anomalies
+4. Improve consistency
+5. Simplify database maintenance
+
+---
+
+# 🔹 Data Redundancy
+
+Duplicate data stored unnecessarily.
+
+### Example
+
+| StudentID | StudentName | DeptName |
+| --------- | ----------- | -------- |
+
+DeptName repeated many times.
+
+---
+
+# 🔹 Anomalies
+
+Problems caused due to redundancy.
+
+Types:
+
+1. Insertion anomaly
+2. Update anomaly
+3. Deletion anomaly
+
+---
+
+# 🔹 Insertion Anomaly
+
+Cannot insert data without unnecessary information.
+
+### Example
+
+Cannot add a department unless at least one student exists.
+
+---
+
+# 🔹 Update Anomaly
+
+Same data must be updated in multiple rows.
+
+### Example
+
+Changing department name requires updating many records.
+
+---
+
+# 🔹 Deletion Anomaly
+
+Deleting one row may remove important information.
+
+### Example
+
+Deleting last student removes department info too.
+
+---
+
+# 3️⃣ First Normal Form (1NF)
+
+# 🔹 Definition
+
+A relation is in 1NF if:
+
+* Each column contains atomic values
+* No repeating groups exist
+* Each cell contains single value only
+
+---
+
+# 🔹 Rules of 1NF
+
+✅ Atomic values only
+✅ Unique rows
+✅ No multivalued attributes
+✅ No arrays/lists in a cell
+
+---
+
+# 🔹 Example BEFORE 1NF
+
+| StudentID | Name  | Phones    |
+| --------- | ----- | --------- |
+| 101       | Rahul | 9876,8765 |
+
+Phones contains multiple values.
+
+❌ Not in 1NF
+
+---
+
+# 🔹 AFTER 1NF
+
+| StudentID | Name  | Phone |
+| --------- | ----- | ----- |
+| 101       | Rahul | 9876  |
+| 101       | Rahul | 8765  |
+
+✅ Now atomic values exist.
+
+---
+
+# 🔹 SQL Functions Used in 1NF Conversion
+
+---
+
+# 🔸 TRIM Function
+
+## Definition
+
+TRIM removes leading and trailing spaces from strings.
+
+Useful for cleaning inconsistent data.
+
+---
+
+## Syntax
+
+```sql
+TRIM(string)
+```
+
+---
+
+## Example
+
+```sql
+SELECT TRIM('   Rahul   ');
+```
+
+### Output
+
+```sql
+Rahul
+```
+
+---
+
+# 🔸 STRING_TO_ARRAY Function
+
+## Definition
+
+Converts a delimited string into an array.
+
+Useful when values are stored comma-separated.
+
+---
+
+## Syntax
+
+```sql
+STRING_TO_ARRAY(string, delimiter)
+```
+
+---
+
+## Example
+
+```sql
+SELECT STRING_TO_ARRAY('9876,8765', ',');
+```
+
+### Output
+
+```sql
+{9876,8765}
+```
+
+---
+
+# 🔸 UNNEST Function
+
+## Definition
+
+UNNEST converts array elements into separate rows.
+
+Useful for converting multivalued attributes into atomic rows.
+
+---
+
+## Syntax
+
+```sql
+UNNEST(array)
+```
+
+---
+
+## Example
+
+```sql
+SELECT UNNEST(ARRAY['9876','8765']);
+```
+
+### Output
+
+| unnest |
+| ------ |
+| 9876   |
+| 8765   |
+
+---
+
+# 🔹 Converting Table into 1NF Using Functions
+
+## Original Table
+
+| StudentID | Name  | Phones    |
+| --------- | ----- | --------- |
+| 101       | Rahul | 9876,8765 |
+
+---
+
+## SQL Query
+
+```sql
+SELECT
+    StudentID,
+    Name,
+    UNNEST(
+        STRING_TO_ARRAY(
+            TRIM(Phones),
+            ','
+        )
+    ) AS Phone
+FROM Students;
+```
+
+---
+
+## Explanation
+
+### TRIM()
+
+Removes extra spaces.
+
+### STRING_TO_ARRAY()
+
+Converts comma-separated values into array.
+
+### UNNEST()
+
+Splits array into multiple rows.
+
+---
+
+## Result
+
+| StudentID | Name  | Phone |
+| --------- | ----- | ----- |
+| 101       | Rahul | 9876  |
+| 101       | Rahul | 8765  |
+
+✅ Table converted into 1NF.
+
+---
+
+# 4️⃣ Second Normal Form (2NF)
+
+# 🔹 Definition
+
+A table is in 2NF if:
+
+1. It is already in 1NF
+2. No partial dependency exists
+
+---
+
+# 🔹 Partial Dependency
+
+Non-prime attribute depends on part of composite key.
+
+---
+
+# 🔹 Example BEFORE 2NF
+
+| StudentID | CourseID | StudentName | CourseName |
+| --------- | -------- | ----------- | ---------- |
+
+Composite key:
+[
+(StudentID, CourseID)
+]
+
+But:
+[
+StudentID \rightarrow StudentName
+]
+
+[
+CourseID \rightarrow CourseName
+]
+
+❌ Partial dependency exists.
+
+---
+
+# 🔹 AFTER 2NF
+
+## Student Table
+
+| StudentID | StudentName |
+| --------- | ----------- |
+
+---
+
+## Course Table
+
+| CourseID | CourseName |
+| -------- | ---------- |
+
+---
+
+## Enrollment Table
+
+| StudentID | CourseID |
+| --------- | -------- |
+
+✅ Partial dependency removed.
+
+---
+
+# 🔹 2NF Using SQL Functions Example
+
+Suppose course names stored as comma-separated values.
+
+## Table
+
+| StudentID | Courses |
+| --------- | ------- |
+| 101       | DBMS,OS |
+
+---
+
+## Query
+
+```sql
+SELECT
+    StudentID,
+    UNNEST(
+        STRING_TO_ARRAY(
+            TRIM(Courses),
+            ','
+        )
+    ) AS Course
+FROM StudentCourses;
+```
+
+---
+
+# 5️⃣ Third Normal Form (3NF)
+
+# 🔹 Definition
+
+A table is in 3NF if:
+
+1. It is in 2NF
+2. No transitive dependency exists
+
+---
+
+# 🔹 Transitive Dependency
+
+Non-key attribute depends on another non-key attribute.
+
+---
+
+# 🔹 Example BEFORE 3NF
+
+| StudentID | DeptID | DeptName |
+| --------- | ------ | -------- |
+
+Dependencies:
+
+[
+StudentID \rightarrow DeptID
+]
+
+[
+DeptID \rightarrow DeptName
+]
+
+❌ Transitive dependency exists.
+
+---
+
+# 🔹 AFTER 3NF
+
+## Student Table
+
+| StudentID | DeptID |
+| --------- | ------ |
+
+---
+
+## Department Table
+
+| DeptID | DeptName |
+| ------ | -------- |
+
+✅ Transitive dependency removed.
+
+---
+
+# 🔹 3NF SQL Example
+
+```sql
+SELECT
+    DeptID,
+    TRIM(DeptName)
+FROM Department;
+```
+
+---
+
+# 6️⃣ Boyce-Codd Normal Form (BCNF)
+
+# 🔹 Definition
+
+A table is in BCNF if:
+
+* For every functional dependency:
+  [
+  X \rightarrow Y
+  ]
+  X must be a super key.
+
+BCNF is stronger than 3NF.
+
+---
+
+# 🔹 Example BEFORE BCNF
+
+| Teacher | Subject | Room |
+| ------- | ------- | ---- |
+
+Dependencies:
+
+[
+(Teacher, Subject) \rightarrow Room
+]
+
+[
+Room \rightarrow Subject
+]
+
+Room is not super key.
+
+❌ Violates BCNF.
+
+---
+
+# 🔹 AFTER BCNF
+
+## Room Table
+
+| Room | Subject |
+| ---- | ------- |
+
+---
+
+## Teacher Table
+
+| Teacher | Room |
+| ------- | ---- |
+
+✅ BCNF achieved.
+
+---
+
+# 🔹 BCNF SQL Example
+
+```sql
+SELECT
+    UNNEST(
+        STRING_TO_ARRAY(
+            'DBMS,OS,CN',
+            ','
+        )
+    );
+```
+
+---
+
+# 7️⃣ Fourth Normal Form (4NF)
+
+# 🔹 Definition
+
+A table is in 4NF if:
+
+1. It is already in BCNF
+2. No multivalued dependency exists
+
+---
+
+# 🔹 Multivalued Dependency
+
+One attribute determines multiple independent values.
+
+Notation:
+[
+A \twoheadrightarrow B
+]
+
+---
+
+# 🔹 Example BEFORE 4NF
+
+| Student | Hobby | Language |
+| ------- | ----- | -------- |
+
+A student can have:
+
+* Multiple hobbies
+* Multiple languages
+
+This creates unnecessary combinations.
+
+❌ Violates 4NF.
+
+---
+
+# 🔹 AFTER 4NF
+
+## StudentHobby Table
+
+| Student | Hobby |
+| ------- | ----- |
+
+---
+
+## StudentLanguage Table
+
+| Student | Language |
+| ------- | -------- |
+
+✅ Multivalued dependency removed.
+
+---
+
+# 🔹 4NF SQL Example
+
+```sql
+SELECT
+    StudentID,
+    UNNEST(
+        STRING_TO_ARRAY(
+            Hobbies,
+            ','
+        )
+    ) AS Hobby
+FROM Students;
+```
+
+---
+
+# 📊 Quick Summary Table
+
+| Normal Form | Removes                 |
+| ----------- | ----------------------- |
+| 1NF         | Repeating groups        |
+| 2NF         | Partial dependency      |
+| 3NF         | Transitive dependency   |
+| BCNF        | Non-superkey dependency |
+| 4NF         | Multivalued dependency  |
+
+---
+
+# 🧠 Important Keywords
+
+| Term                | Meaning                                 |
+| ------------------- | --------------------------------------- |
+| FD                  | Relationship between attributes         |
+| Closure             | Set of derivable attributes             |
+| Candidate Key       | Minimal super key                       |
+| Super Key           | Attribute set uniquely identifying rows |
+| Prime Attribute     | Part of candidate key                   |
+| Non-prime Attribute | Not part of candidate key               |
+| Redundancy          | Duplicate data                          |
+| Anomaly             | Data inconsistency problem              |
+
+---
+
+# 🎯 Final Exam Tips
+
+✅ Learn all dependency types carefully
+✅ Practice attribute closure problems
+✅ Remember anomaly definitions
+✅ Understand decomposition examples
+✅ Practice SQL functions:
+
+* TRIM()
+* STRING_TO_ARRAY()
+* UNNEST()
+
+✅ Memorize differences:
+
+* 2NF → removes partial dependency
+* 3NF → removes transitive dependency
+* BCNF → every determinant must be super key
+* 4NF → removes multivalued dependency

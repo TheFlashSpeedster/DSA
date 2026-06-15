@@ -1,0 +1,5 @@
+{
+  "editor.stickyScroll.defaultModel": "outlineModel",
+  "workbench.tree.enableStickyScroll": true,
+  "workbench.tree.stickyScrollMaxItemCount": 7
+}
