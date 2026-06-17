@@ -3,12 +3,23 @@ using namespace std;
 
 // break - used to exit from the loop
 
-// WAP - Check Prime Number
+// WAP - Check Prime or Composite Number
 
 int main(){
-  for (int i = 1; i < count; i++)
+  int n;
+  cout << "Enter Number: ";
+  cin >> n;
+
+  bool prime = true;
+  for (int i = 2; i <= n-1; i++)
   {
-    /* code */
+    if(n%i==0){
+      prime = false;
+      break;
+    }
   }
-  
+
+  if(n==1) cout << n << " is neither prime nor composite" << endl;
+  else if (prime==true) cout << n << " is prime" << endl;
+  else cout << n << " is composite" << endl;
 }
